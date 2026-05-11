@@ -1,7 +1,7 @@
-from sqlalchemy import Text, BigInteger, SmallInteger, Date, String, ForeignKey, func
+from sqlalchemy import Text, BigInteger, SmallInteger, Date, DateTime, String, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 
-from datetime import date
+from datetime import date, datetime
 
 class Base(DeclarativeBase):
     pass
@@ -104,7 +104,7 @@ class Submission(Base):
     enrollment_id:   Mapped[int]  = mapped_column(BigInteger, ForeignKey('enrollments.enrollment_id', ondelete='CASCADE'), nullable=False)
     homework_id:     Mapped[int]  = mapped_column(BigInteger, ForeignKey('homeworks.homework_id', ondelete='CASCADE'), nullable=False)
     score:           Mapped[int]  = mapped_column(SmallInteger, nullable=False)
-    submission_date: Mapped[date] = mapped_column(Date, nullable=False)
+    submission_date: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
     #Описываем связи с другими таблицами
     enrollment: Mapped['Enrollment'] = relationship('Enrollment', back_populates='submission', uselist=False)
@@ -117,7 +117,7 @@ class Attendance(Base):
     attendance_id:   Mapped[int]  = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     enrollment_id:   Mapped[int]  = mapped_column(BigInteger, ForeignKey('enrollments.enrollment_id', ondelete='CASCADE'), nullable=False)
     lesson_id:       Mapped[int]  = mapped_column(BigInteger, ForeignKey('lessons.lesson_id', ondelete='CASCADE'), nullable=False)
-    attendance_date: Mapped[date] = mapped_column(Date, nullable=False)
+    attendance_date: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
     
     #Описываем связи с другими таблицами
     enrollment: Mapped['Enrollment'] = relationship('Enrollment', back_populates='attendance', uselist=False)

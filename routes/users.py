@@ -13,9 +13,9 @@ async def get_users(session: AsyncSession = Depends(get_session)):
     return await select_all_records(model=User, session=session)
 
 
-@users_router.post('/')
-async def create_user(user: UserCreate, session: AsyncSession = Depends(get_session)):
-    return await create_record(schema=user, model=User, session=session)
+# @users_router.post('/')
+# async def create_user(user: UserCreate, session: AsyncSession = Depends(get_session)):
+#     return await create_record(schema=user, model=User, session=session)
 
 
 @users_router.patch('/{user_id}')

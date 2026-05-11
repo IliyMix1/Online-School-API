@@ -122,3 +122,12 @@ class EnrollmentOut(EnrollmentCreate):
     ended_at:      date | None
 
 
+class SubmissionHomework(BaseModel):
+    enrollment_id: int
+    homework_id:   int
+    score:         int
+
+
+class AttendanceLesson(BaseModel):
+    enrollment_id: int
+    lesson_id:     int
