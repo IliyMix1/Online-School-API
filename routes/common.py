@@ -144,7 +144,7 @@ async def get_attendance_by_enrollment(enrollment_id: int, user = Depends(get_cu
     result = await session.execute(
         select(Attendance).where(Attendance.enrollment_id == enrollment_id)
     )
-    attendance = result.scalar_one_or_none()
+    attendance = result.scalars().all()
     return attendance
 
 

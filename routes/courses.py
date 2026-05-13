@@ -26,7 +26,7 @@ async def get_course(course_id: int, session: AsyncSession = Depends(get_session
     return record
 
 @courses_router.post('/', response_model=CourseOut)
-async def create_course(course: CourseCreate, session: AsyncSession = Depends(get_session), user = Depends(get_current_user), role = Depends(check_role)):
+async def create_course(course: CourseCreate, session: AsyncSession = Depends(get_session), user = Depends(check_role)):
     return await create_record(schema=course, model=Course, session=session)
 
 @courses_router.post('/{course_id}')
