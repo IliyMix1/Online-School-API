@@ -1,3 +1,5 @@
 py_log.log
 students.json
 .env
+__pycache__/
+*.py[cod]

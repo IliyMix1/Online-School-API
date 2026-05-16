@@ -41,9 +41,9 @@ async def get_homework(homework_id: int, session: AsyncSession = Depends(get_ses
     result = await session.execute(
         select(Task).join(HomeworkTask, HomeworkTask.task_id == Task.task_id).where(HomeworkTask.homework_id == homework_id)  #Склеили 2 таблицы по нашему "правилу", а затем отфильтровали результат
     )
-    homeworks = result.scalars().all()
+    tasks = result.scalars().all()
 
-    return homeworks
+    return tasks
 
 @my_router.post('/homeworks/{homework_id}/submit')
 async def submit_homework(homework_id: int, score: int, session: AsyncSession = Depends(get_session), user = Depends(get_current_user)):

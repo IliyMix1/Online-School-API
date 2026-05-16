@@ -134,7 +134,7 @@ class Task(Base):
     points:         Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)
 
     #Описываем связи с другими таблицами
-    homework_tasks: Mapped['HomeworkTask'] = relationship('HomeworkTask', back_populates='task')
+    homework_tasks: Mapped[list['HomeworkTask']] = relationship('HomeworkTask', back_populates='task')
 
 class HomeworkTask(Base):
     __tablename__ = 'homework_tasks'
