@@ -38,7 +38,7 @@ async def get_enrollment(course_id: int, user = Depends(get_current_user), sessi
     
     return enrollment
 
-async def check_role(user = Depends(get_current_user)):
+async def get_current_admin(user = Depends(get_current_user)):
     if user.role != 'admin':
         raise HTTPException(status_code=403, detail='Insufficient privileges')
     

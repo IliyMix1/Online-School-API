@@ -89,6 +89,19 @@ class UserPatch(BaseModel):
     role: Literal['student', 'admin'] | None = None
 
 
+class StudentOut(BaseModel):
+    first_name:   str
+    last_name:    str
+    email:        str
+    phone_number: str | None = None
+
+class StudentPatch(BaseModel):
+    first_name:   str | None = None
+    last_name:    str | None = None
+    email:        str | None = None
+    phone_number: str | None = None
+
+
 class CourseCreate(BaseModel):
     name: str = Field(min_length=2)
 
@@ -107,13 +120,13 @@ class EnrollmentCreate(BaseModel):
     user_id:    int
     course_id:  int
     tariff:     Literal['mini', 'standard', 'pro']
-    status:     Literal['quit', 'active', 'finished']
+    status:     Literal['active', 'finished', 'quit']
 
 class EnrollmentPatch(BaseModel):
-    user_id:   int  | None = None
+    #user_id:   int  | None = None
     course_id: int  | None = None
     tariff:    Literal['mini', 'standard', 'pro']    | None = None
-    status:    Literal['quit', 'active', 'finished'] | None = None
+    status:    Literal['active', 'finished', 'quit'] | None = None
     ended_at:  date | None = None
 
 class EnrollmentOut(EnrollmentCreate):

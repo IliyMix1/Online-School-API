@@ -1,22 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from database import get_session, select_all_records, select_record, create_record #, select_record_by_user_id_course_id
+from database import get_session, select_all_records, select_record, create_record, patch_record
 from models.models import User, Student, Course, Enrollment, Homework, Lesson, Submission, Attendance
 from schemas.schemas import UserCreate, UserPatch, CourseCreate, CoursePatch, CourseOut, EnrollmentBuy, EnrollmentCreate
-from dependencies import get_current_user, check_role
+from dependencies import get_current_user, get_current_admin
 
 
-courses_router = APIRouter(prefix='/courses', tags=['Courses'])
+courses_router = APIRouter(tags=['Courses'])
 
 
-@courses_router.get('/', response_model=list[CourseOut])
+@courses_router.get('/courses', response_model=list[CourseOut])
 async def get_all_courses(session: AsyncSession = Depends(get_session)):
     #Вызываем асинхронную функцию, чтобы посмотреть всю таблицу
     return await select_all_records(model=Course, session=session)
 
 
-@courses_router.get('/{course_id}', response_model=CourseOut)
+@courses_router.get('/courses/{course_id}', response_model=CourseOut)
 async def get_course(course_id: int, session: AsyncSession = Depends(get_session)):
     record = await select_record(id=course_id, model=Course, session=session)
 
@@ -25,11 +25,8 @@ async def get_course(course_id: int, session: AsyncSession = Depends(get_session
 
     return record
 
-@courses_router.post('/', response_model=CourseOut)
-async def create_course(course: CourseCreate, session: AsyncSession = Depends(get_session), user = Depends(check_role)):
-    return await create_record(schema=course, model=Course, session=session)
 
-@courses_router.post('/{course_id}')
+@courses_router.post('/courses/{course_id}')
 async def buy_course(course_id: int, schema: EnrollmentBuy, session: AsyncSession = Depends(get_session), user = Depends(get_current_user)):
     #Проверяем существует ли желаемый курс
     #course = await select_record(id=course_id, model=Course, session=session)
@@ -60,3 +57,17 @@ async def buy_course(course_id: int, schema: EnrollmentBuy, session: AsyncSessio
     )
 
     return await create_record(model=Enrollment, schema=data, session=session)
+
+
+@courses_router.post('/admin/courses', response_model=CourseOut)
+async def create_course(course: CourseCreate, session: AsyncSession = Depends(get_session), user = Depends(get_current_admin)):
+    return await create_record(schema=course, model=Course, session=session)
+
+@courses_router.patch('/admin/courses/{course_id}', response_model=CourseOut)
+async def patch_course(course_id: int, data: CoursePatch, session: AsyncSession = Depends(get_session), user = Depends(get_current_admin)):
+    record = await patch_record(id=course_id, model=Course, schema=data, session=session)
+
+    if record is None:
+        raise HTTPException(status_code=404, detail='Record not found')
+    
+    return record

@@ -9,6 +9,11 @@ import routes.users    as users
 import routes.courses  as courses
 import routes.enrollments as enrollments
 
+import routes.auth as     auth
+import routes.my.homeworks as homeworks 
+import routes.my.lessons   as lessons
+import routes.my.progress  as progress
+
 from database import engine
 from models.models import Base
 
@@ -23,10 +28,16 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 #Подключаем роутер, где описаны эндпоинты для работы со students
 #app.include_router(legacy.legacy_router)
+app.include_router(auth.auth_router)
+app.include_router(progress.my_router)
+app.include_router(lessons.my_router)
+app.include_router(homeworks.my_router)
+
 app.include_router(common.router)
 app.include_router(users.users_router)
 app.include_router(courses.courses_router)
-#app.include_router(enrollments.enrollments_router)
+
+app.include_router(enrollments.router)
 
 #Поднимаем сервер
 if __name__ == '__main__':
