@@ -3,3 +3,6 @@ students.json
 .env
 __pycache__/
 *.py[cod]
+__pycache__
+.pytest_cache
+.vscode
