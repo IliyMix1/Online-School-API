@@ -71,7 +71,7 @@ class Homework(Base):
     homework_id:   Mapped[int]   = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     course_id:     Mapped[int]   = mapped_column(BigInteger, ForeignKey('courses.course_id', ondelete='CASCADE'), nullable=False)
     homework_name: Mapped[str]   = mapped_column(String(50), nullable=False, unique=True)
-    max_score:     Mapped[int]   = mapped_column(SmallInteger, nullable=False)
+    #max_score:     Mapped[int]   = mapped_column(SmallInteger, nullable=False)
     deadline:      Mapped[date]  = mapped_column(Date, nullable=False)
     created_at:    Mapped[date]  = mapped_column(Date, nullable=False, server_default=func.now())
     lesson_id:     Mapped[int]   = mapped_column(BigInteger, ForeignKey('lessons.lesson_id', ondelete='CASCADE'), nullable=True)

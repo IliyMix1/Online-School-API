@@ -177,3 +177,11 @@ class TaskSubmit(BaseModel):
 class HomeworkSubmit(BaseModel):
     '''Для сдачи домашек'''
     list[TaskSubmit]
+    
+class HomeworkCreate(BaseModel):
+    course_id:     int
+    homework_name: str
+    deadline:      date
+    lesson_id:     int | None
+    #homework_id:   int
+    task_ids:      list[int]

@@ -89,9 +89,9 @@ async def submit_homework(homework_id: int, submitted_tasks: list[TaskSubmit], s
         max_points += 1
         if submitted_answer == correct_answer:
             earned_points += 1
-            print('Wow, cool!')
+            print('Great job! :)')
         else:
-            print('Try again later, bro')
+            print('You got it wrong bro, try again later :(')
 
     data = SubmissionHomework(
         enrollment_id=enrollment.enrollment_id,
@@ -99,30 +99,4 @@ async def submit_homework(homework_id: int, submitted_tasks: list[TaskSubmit], s
         score=earned_points,
     )
     return await create_record(model=Submission, schema=data, session=session)
-
-    #return {'earned_points': earned_points, 'max_points': max_points}
-
-
-
-
-# @my_router.post('/homeworks/{homework_id}/submit')
-# async def submit_homework(homework_id: int, score: int, session: AsyncSession = Depends(get_session), user = Depends(get_current_user)):
-#     #Проверяем есть ли такая домашка в БД
-#     result = await session.execute(
-#         select(Homework).where(Homework.homework_id == homework_id)
-#     )
-#     homework = result.scalar_one_or_none()
-
-#     if homework is None:
-#         raise HTTPException(status_code=404, detail='Not found')
     
-#     #Проверяем достаточно ли у пользователя прав, чтобы посмотреть эту домашку
-#     enrollment = await get_enrollment(course_id=homework.course_id, user=user, session=session)
-    
-#     submission_data = SubmissionHomework(
-#         enrollment_id=enrollment.enrollment_id,
-#         homework_id=homework_id,
-#         score=score,
-#     )
-
-#     return await create_record(model=Submission, schema=submission_data, session=session)
