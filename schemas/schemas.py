@@ -183,5 +183,11 @@ class HomeworkCreate(BaseModel):
     homework_name: str
     deadline:      date
     lesson_id:     int | None = None
-    #homework_id:   int
     task_ids:      list[int]
+
+class HomeworkPatch(BaseModel):
+    course_id:     int       | None = None
+    homework_name: str       | None = None
+    deadline:      date      | None = None
+    lesson_id:     int       | None = None
+    #task_ids:      list[int] | None = None

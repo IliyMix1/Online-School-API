@@ -1,10 +1,10 @@
 #Для эндпоинтов
 from fastapi                import APIRouter, Depends, HTTPException
-from schemas.schemas        import HomeworkCreate
+from schemas.schemas        import HomeworkCreate, HomeworkPatch
 #Для интеграции с PostgreSQL
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy             import select
-from database               import get_session 
+from database               import get_session, patch_record
 from models.models          import Homework, HomeworkTask, Course, Lesson, Task
 #Зависимости
 from dependencies           import get_current_admin
@@ -73,4 +73,13 @@ async def create_homework(homework_data: HomeworkCreate, admin = Depends(get_cur
     await session.refresh(homework)
 
     return homework_data
+
+@admin_router.patch('/homeworks/{homework_id}')
+async def patch_homework(homework_id: int, homework_data: HomeworkPatch, admin = Depends(get_current_admin), session = Depends(get_session)):
+    record = await patch_record(id=homework_id, model=Homework, schema=homework_data, session=session)
+
+    if record is None:
+        raise HTTPException(status_code=404, detail='Record not found')
+    
+    return record
 
