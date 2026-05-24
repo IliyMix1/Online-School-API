@@ -34,7 +34,7 @@ async def create_homework(homework_data: HomeworkCreate, admin = Depends(get_cur
         #Проверяем принадлежит ли урок к нужному курсу
         if lesson.course_id != homework_data.course_id:
             raise HTTPException(status_code=409, detail='Lesson does not belong to this course')
-    
+        
     #Получаем все уникальные id задач и проверяем какие из них есть в БД
     submitted_task_ids = set(homework_data.task_ids)
     result = await session.execute(
@@ -71,4 +71,6 @@ async def create_homework(homework_data: HomeworkCreate, admin = Depends(get_cur
     #Завершаем транзакцию
     await session.commit()
     await session.refresh(homework)
+
+    return homework_data
 
