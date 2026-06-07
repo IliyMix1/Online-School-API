@@ -7,15 +7,25 @@ from dotenv import load_dotenv
 #Загружаем переменные из .env
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL_TEST = os.getenv('DATABASE_URL_TEST')
 
-#Создаём асинхронный движок
+#Создаём асинхронный движок для самого приложения и для тестов
 engine = create_async_engine(DATABASE_URL)
+engine_test = create_async_engine(DATABASE_URL_TEST)
 
+#Создаём сессии для самого приложения и для тестов
 async_session = sessionmaker(engine, class_=AsyncSession)
+async_session_test = sessionmaker(engine_test, class_=AsyncSession)
 
+#Создаём функции получения сессии для самого приложения и для тестов
 async def get_session():
     #Создаём асинхронную сессию и кладём её в переменную(with - гарантирует, что она сама закроется после работы с сессией)
     async with async_session() as session:
+        yield session
+
+async def get_session_test():
+    #Создаём асинхронную сессию и кладём её в переменную(with - гарантирует, что она сама закроется после работы с сессией)
+    async with async_session_test() as session:
         yield session
 
 
