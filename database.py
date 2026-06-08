@@ -1,5 +1,6 @@
 from sqlalchemy             import select
 from sqlalchemy.orm         import sessionmaker
+from sqlalchemy.pool        import NullPool
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 import os
 from dotenv import load_dotenv
@@ -11,7 +12,7 @@ DATABASE_URL_TEST = os.getenv('DATABASE_URL_TEST')
 
 #Создаём асинхронный движок для самого приложения и для тестов
 engine = create_async_engine(DATABASE_URL)
-engine_test = create_async_engine(DATABASE_URL_TEST)
+engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool )
 
 #Создаём сессии для самого приложения и для тестов
 async_session = sessionmaker(engine, class_=AsyncSession)

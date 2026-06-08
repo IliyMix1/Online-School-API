@@ -56,17 +56,12 @@ async def login(schema: AuthLogin, session: AsyncSession = Depends(get_session))
     )
     same_student = result.scalar_one_or_none()
 
-    # result = await session.execute(
-    #     select(Student).where(Student.email == schema.email)
-    # )
-    # same_student = result.scalar_one_or_none()
-
     #Проверяем, есть ли уже аккаунт с такой почтой
     if same_student is None:
         raise HTTPException(status_code=401, detail='Account with this email does not exists')
     
     #Ищем запись по id и сразу сохраняем объект для дальнейшей работы
-    user = same_student.user #await select_record(id=same_student.user_id, model=User, session=session)
+    user = same_student.user
 
     #Сравниваем хэш введённого пароля с хэшем из БД
     is_verified = verify_password(password_plain=schema.password, password_hashed=user.hashed_password)
