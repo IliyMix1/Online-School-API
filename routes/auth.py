@@ -3,6 +3,7 @@ from fastapi                import APIRouter, Depends, HTTPException
 from schemas.schemas        import AuthReg, AuthLogin, AuthUserCreate, AuthStudentCreate
 #Для интеграции с PostgreSQL
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm         import joinedload
 from sqlalchemy             import select
 from database               import get_session, select_record, create_record
 from models.models          import User, Student
@@ -49,19 +50,23 @@ async def registration(schema: AuthReg, session: AsyncSession = Depends(get_sess
 
 @auth_router.post('/login')
 async def login(schema: AuthLogin, session: AsyncSession = Depends(get_session)):
-    #Ищем запись по введённой почте
-    #same_student = await select_record_by_email(email=schema.email, model=Student, session=session)
+    #Сначала ищем запись в students по почте, берём user_id и сразу достаёт строку с таким user_id из users(склеили строчки из students и users в одну) 
     result = await session.execute(
-        select(Student).where(Student.email == schema.email)
+        select(Student).options(joinedload(Student.user)).where(Student.email == schema.email)
     )
     same_student = result.scalar_one_or_none()
+
+    # result = await session.execute(
+    #     select(Student).where(Student.email == schema.email)
+    # )
+    # same_student = result.scalar_one_or_none()
 
     #Проверяем, есть ли уже аккаунт с такой почтой
     if same_student is None:
         raise HTTPException(status_code=401, detail='Account with this email does not exists')
     
     #Ищем запись по id и сразу сохраняем объект для дальнейшей работы
-    user = await select_record(id=same_student.user_id, model=User, session=session)
+    user = same_student.user #await select_record(id=same_student.user_id, model=User, session=session)
 
     #Сравниваем хэш введённого пароля с хэшем из БД
     is_verified = verify_password(password_plain=schema.password, password_hashed=user.hashed_password)
