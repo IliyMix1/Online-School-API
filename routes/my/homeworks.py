@@ -1,6 +1,6 @@
 #Для эндпоинтов
 from fastapi                import APIRouter, Depends, HTTPException
-from schemas.schemas        import SubmissionHomework, TaskForStudent, HomeworkSubmit, TaskSubmit
+from schemas.schemas        import SubmissionHomework, TaskForStudent, TaskSubmit
 #Для интеграции с PostgreSQL
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy             import select
@@ -79,19 +79,24 @@ async def submit_homework(homework_id: int, submitted_tasks: list[TaskSubmit], s
             task.task_id: task.answer
         }
 
+    #Получаем словарь вида: {task_id: task}
+    tasks_by_id = {task.task_id: task for task in tasks}
     earned_points = 0
     max_points = 0
+
     #Проходимся по правильным ответам и сравниваем их с тем, что отправил пользователь
     for task_id, correct_answer in correct_answers.items():
         #Достаём из словаря ответ пользователя по id
         submitted_answer = submitted_answers.get(task_id)
+        #Получаем задание по id, чтобы иметь доступ к баллам
+        task = tasks_by_id.get(task_id)
 
         max_points += 1
         if submitted_answer == correct_answer:
-            earned_points += 1
-            print('Great job! :)')
-        else:
-            print('You got it wrong bro, try again later :(')
+            earned_points += task.points
+            #print('Great job! :)')
+        #else:
+            #print('You got it wrong bro, try again later :(')
 
     data = SubmissionHomework(
         enrollment_id=enrollment.enrollment_id,

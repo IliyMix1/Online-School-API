@@ -16,11 +16,11 @@ security = HTTPBearer()
 
 def hash_password(password: str) -> str:  
     #Обрезаем начальную строку, превращаем в байты и добавляем "соль"
-    return bcrypt.hashpw(password[:70].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(password_plain: str, password_hashed: str) -> bool:
     #Убираем "соль" из хэша и сравниваем введённый пароль с тем, что лежит в БД
-    return bcrypt.checkpw(password_plain[:70].encode('utf-8'), password_hashed[:70].encode('utf-8'))
+    return bcrypt.checkpw(password_plain.encode('utf-8'), password_hashed.encode('utf-8'))
 
 def create_access_token(data: dict) -> str:
     payload = data.copy()
