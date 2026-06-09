@@ -1,6 +1,6 @@
 from fastapi.security import HTTPBearer
 from datetime import datetime, timedelta
-from jose     import jwt 
+from jose     import jwt, JWTError
 from dotenv   import load_dotenv
 import bcrypt
 import os
