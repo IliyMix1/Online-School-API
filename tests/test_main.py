@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from main import app
-from database import get_session, get_session_test, create_record
+from database import get_session, get_session_test
 import random
 import pytest
 
@@ -36,18 +36,28 @@ def reg_user():
     return reg_data
 
 @pytest.fixture
-def login_admin():
-    '''Логинимся от лица администратора'''
-    login_data = {
-        "email": 'adminROOT@gmail.com',
-        "password": 'Admin12345'
-    }
-    response = client.post('/auth/login', json=login_data)
+def get_auth_client(reg_user):
+    '''Логинимся от лица студента/администратора и сразу же передаём токен в заголовок'''
+    def _login(role: str):
+        if role == 'admin':
+            login_data = {"email": 'adminROOT@gmail.com', "password": 'Admin12345'}
+        else:
+            login_data = {"email": reg_user['email'], "password": reg_user['password']}
     
-    #Превращаем полученный json в словарь
-    data = response.json()
-    #Возвращаем токен
-    yield data['access_token']
+        response = client.post('/auth/login', json=login_data)
+    
+        #Превращаем полученный json в словарь
+        data = response.json()
+        token = data['access_token']
+
+        #Привязываем токен к клиенту
+        client.headers.update({'Authorization': f'Bearer {token}'})
+        return client
+    
+    yield _login #data['access_token']
+
+    #После теста очищаем заголовки, чтобы случайно не помешать другим тестам
+    client.headers.pop('Authorization', None)
 
 
 def test_simple():
@@ -74,18 +84,11 @@ def test_login(reg_user):
 
     assert response.status_code == 200
 
-def test_create_course(login_admin):
+def test_create_course(get_auth_client):
     '''Проверяем создаётся ли курс'''
-    #Получаем токен из фикстуры и смотрим успешно ли залогинились
-    token = login_admin
-    assert token is not None
-
-    #Передаём токен в заголовки
-    headers = {'Authorization': f'Bearer {token}'}
+    admin_client = get_auth_client('admin')
 
     #Пытаемся создать курс
-    response = client.post('/admin/courses', 
-    json={"name": f'course {generate_filler(15)}'},
-    headers=headers)
+    response = admin_client.post('/admin/courses', json={"name": f'course {generate_filler(15)}'})
 
     assert response.status_code == 200
