@@ -19,15 +19,15 @@ import routes.admin.homeworks as admin_homeworks
 from database import engine
 from models.models import Base
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        #Создаём таблицы по моделям
-        await conn.run_sync(Base.metadata.create_all)
-    yield
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     async with engine.begin() as conn:
+#         #Создаём таблицы по моделям
+#         await conn.run_sync(Base.metadata.create_all)
+#     yield
 
 #Создаём объект класса
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 #Подключаем роутер, где описаны эндпоинты для работы со students
 #app.include_router(legacy.legacy_router)
 app.include_router(auth.auth_router)
