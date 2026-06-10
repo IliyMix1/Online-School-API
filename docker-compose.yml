@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    container_name: online_school_api_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: online_school_api
+      POSTGRES_USER: online_school_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: online_school_api_app
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
