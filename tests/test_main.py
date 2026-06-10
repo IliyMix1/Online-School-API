@@ -64,6 +64,8 @@ def test_simple():
     '''Проверяем, работают ли вообще тесты'''
     assert 1 + 1 == 2
 
+
+
 def test_reg():
     '''Проверяем эндпоинт регистрации'''
     response = client.post('/auth/reg', json={
@@ -73,6 +75,18 @@ def test_reg():
         "password":    'test12345'
         })
     assert response.status_code == 200
+
+def test_reg_with_existing_email(reg_user):
+    '''Проверям вылетает ли ошибка, если используют уже занятый email'''
+    response = client.post('/auth/reg', json={
+        "first_name": reg_user['first_name'],
+        "last_name":  reg_user['last_name'], 
+        "email":      reg_user['email'], 
+        "password":   'test12345'
+    })
+
+    assert response.status_code == 409
+
 
 
 def test_login(reg_user):
@@ -84,7 +98,27 @@ def test_login(reg_user):
 
     assert response.status_code == 200
 
-def test_create_course(get_auth_client):
+def test_login_wrong_password(reg_user):
+    '''Проверяем вылетает ли ошибка при неверном пароле'''
+    response = client.post('/auth/login', json={
+        'email': reg_user['email'],
+        'password': 'testtesttest'
+    })
+
+    assert response.status_code == 401
+
+def test_login_non_existing_email(reg_user):
+    '''Провермяем вылетает ли ошибка, если email не существует'''
+    response = client.post('/auth/login', json={
+        'email': 'testtesttest',
+        'password': reg_user['password']
+    })
+
+    assert response.status_code == 401
+
+
+
+def test_admin_can_create_course(get_auth_client):
     '''Проверяем создаётся ли курс'''
     admin_client = get_auth_client('admin')
 
@@ -92,3 +126,39 @@ def test_create_course(get_auth_client):
     response = admin_client.post('/admin/courses', json={"name": f'course {generate_filler(15)}'})
 
     assert response.status_code == 200
+
+def test_student_cannot_create_course(get_auth_client):
+    '''Проверяем есть ли у студентов возможность создать курс(её быть не должно)'''
+    student_client = get_auth_client('student')
+
+    response = student_client.post('/admin/courses', json={"name": f'course {generate_filler(15)}'})
+
+    assert response.status_code == 403  
+
+def test_user_can_buy_course(get_auth_client):
+    student_client = get_auth_client('student')
+
+    course_id = random.randint(1, 9)
+    tariffs = ('mini', 'standard', 'pro')
+
+    response = student_client.post(f'/courses/{course_id}/buy', json={
+        'tariff': random.choice(tariffs)
+    })
+
+    assert response.status_code == 200
+
+def test_user_cannot_buy_same_course_twice(get_auth_client):
+    student_client = get_auth_client('student')
+
+    course_id = random.randint(1, 9)
+    tariffs = ('mini', 'standard', 'pro')
+    tariff = random.choice(tariffs)
+
+    response = student_client.post(f'/courses/{course_id}/buy', json={
+        'tariff': tariff
+    })
+    response = student_client.post(f'/courses/{course_id}/buy', json={
+        'tariff': tariff
+    })
+
+    assert response.status_code == 409
