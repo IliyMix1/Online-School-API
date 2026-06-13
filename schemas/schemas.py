@@ -127,12 +127,22 @@ class TaskForStudent(BaseModel):
     task_text: str
     points:    int
 
+class TaskCreate(BaseModel):
+    task_text:      str
+    correct_answer: str
+    points:         int | None = 1
+
+class TaskPatch(BaseModel):
+    task_text:      str | None = None
+    correct_answer: str | None = None
+    points:         int | None = None
 
 class TaskSubmit(BaseModel):
     '''Для сдачи заданий'''
     task_id: int
     answer: str = Field(min_length=1)
     
+
 class HomeworkCreate(BaseModel):
     course_id:     int
     homework_name: str

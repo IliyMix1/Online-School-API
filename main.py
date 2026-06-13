@@ -16,6 +16,7 @@ import routes.my.progress  as progress
 
 import routes.admin.homeworks as admin_homeworks
 import routes.admin.lessons   as admin_lessons
+import routes.admin.tasks     as admin_tasks
 
 # from database import engine
 # from models.models import Base
@@ -38,6 +39,7 @@ app.include_router(my_homeworks.my_router)
 
 app.include_router(admin_homeworks.admin_router)
 app.include_router(admin_lessons.admin_router)
+app.include_router(admin_tasks.admin_router)
 
 #.include_router(common.router)
 app.include_router(users.users_router)
