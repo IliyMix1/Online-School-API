@@ -4,12 +4,12 @@ import uvicorn
 
 #Импортируем эндпоинты
 #import routes.legacy   as legacy
-import routes.common   as common
-import routes.users    as users
-import routes.courses  as courses
+#import routes.common   as common
+import routes.users       as users
+import routes.courses     as courses
 import routes.enrollments as enrollments
+import routes.auth        as auth
 
-import routes.auth as     auth
 import routes.my.homeworks as my_homeworks 
 import routes.my.lessons   as lessons
 import routes.my.progress  as progress
@@ -17,8 +17,8 @@ import routes.my.progress  as progress
 import routes.admin.homeworks as admin_homeworks
 import routes.admin.lessons   as admin_lessons
 
-from database import engine
-from models.models import Base
+# from database import engine
+# from models.models import Base
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
