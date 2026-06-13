@@ -109,6 +109,17 @@ class AttendanceLesson(BaseModel):
     enrollment_id: int
     lesson_id:     int
 
+class LessonCreate(BaseModel):
+    '''Для создания уроков'''
+    course_id:   int
+    lesson_name: str
+    lesson_date: date
+
+class LessonPatch(BaseModel):
+    course_id:   int | None = None
+    lesson_name: str | None = None
+    lesson_date: date | None = None
+
 
 class TaskForStudent(BaseModel):
     '''Для отображения заданий'''
